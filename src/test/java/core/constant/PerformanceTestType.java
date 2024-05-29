@@ -1,4 +1,4 @@
-package crisp.core.constant;
+package core.constant;
 
 public enum PerformanceTestType {
     LOAD,

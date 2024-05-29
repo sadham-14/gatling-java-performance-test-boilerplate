@@ -1,11 +1,10 @@
-package crisp.core.util;
+package core.util;
 
 import io.gatling.javaapi.http.HttpProtocolBuilder;
 
 import static io.gatling.javaapi.http.HttpDsl.http;
 
 public class HttpProtocol {
-
     public static HttpProtocolBuilder getGenericHttpProtocol() {
         return http
                 .header("Cache-Control", "no-cache")

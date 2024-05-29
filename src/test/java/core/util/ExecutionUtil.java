@@ -1,9 +1,9 @@
-package crisp.core.util;
+package core.util;
 
 import io.gatling.javaapi.core.Session;
 
-import static crisp.core.constant.ApiConstant.HTTP_INTERNAL_SERVER_ERROR;
-import static crisp.core.constant.ApiConstant.RESPONSE_STATUS_CODE;
+import static core.constant.ApiPayloadConstant.HTTP_INTERNAL_SERVER_ERROR;
+import static core.constant.ApiPayloadConstant.RESPONSE_STATUS_CODE;
 
 public class ExecutionUtil {
     private static int currentTotalRequestCount = 0;

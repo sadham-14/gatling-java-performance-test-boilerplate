@@ -1,9 +1,9 @@
-package crisp.core.constant;
+package core.constant;
 
 public enum BusinessProcess {
-    BP1("BP1: Application Environment Creation Request Submission"),
-    BP2("BP2: Application Environment Creation Request Approval"),
-    BP3("BP3: View all Service Requests");
+    BP1("BP1: Add Product"),
+    BP2("BP2: Update Product"),
+    BP3("BP3: Get All Products");
 
     private final String businessProcessFullName;
 
