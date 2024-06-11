@@ -5,7 +5,7 @@ import static core.util.PropertyFileReader.getPropertyValue;
 public class EnvironmentConstant {
     public static final String SIT = "SIT";
     public static final String UAT = "UAT";
-    public static final String TEST_ENV = System.getProperty("env", SIT); // Default is SIT
+    public static final String TEST_ENV = System.getProperty("env", SIT); // Setting the default environment to SIT
     public static final String BASE_URL = getBaseUrl();
 
     private static String getBaseUrl() {

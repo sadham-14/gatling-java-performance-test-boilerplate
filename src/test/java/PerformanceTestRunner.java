@@ -3,35 +3,29 @@ import core.constant.PerformanceTestType;
 import io.gatling.javaapi.core.Simulation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scenario.BP1SimulationImpl;
-import scenario.BP2SimulationImpl;
-import scenario.BP3SimulationImpl;
-import scenario.BPSimulationService;
-import scenario.breakpoint.BP1BreakpointSimulationImpl;
-import scenario.breakpoint.BP2BreakpointSimulationImpl;
-import scenario.breakpoint.BP3BreakpointSimulationImpl;
+import scenario.*;
 
 import static core.constant.BusinessProcess.BP1;
 import static core.constant.PerformanceTestType.LOAD;
 import static core.constant.TestConfiguration.*;
 import static core.util.HttpProtocol.getGenericHttpProtocol;
+import static java.time.Duration.ofSeconds;
 
 public class PerformanceTestRunner extends Simulation {
-    private final Logger logger = LoggerFactory.getLogger(PerformanceTestRunner.class);
-
     public PerformanceTestRunner() {
-        final String businessProcessString = System.getProperty("bp", BP1.name()); // Default is BP1
-        final String testTypeString = System.getProperty("testType", LOAD.name()); // Default is Load
+        final String businessProcessString = System.getProperty("bp", BP1.name()); // Setting the default business process to BP1
+        final String testTypeString = System.getProperty("testType", LOAD.name()); // Setting the default test type to Load test
 
         BusinessProcess businessProcess = BusinessProcess.valueOf(businessProcessString);
         PerformanceTestType performanceTestType = PerformanceTestType.valueOf(testTypeString);
 
+        Logger logger = LoggerFactory.getLogger(PerformanceTestRunner.class);
         logger.debug(
                 "Starting the {} test for the business process: {}",
                 testTypeString, businessProcess.getBusinessProcessFullName()
         );
 
-        BPSimulationService testScenario = selectTest(businessProcess, performanceTestType);
+        BusinessProcessSimulation testScenario = selectTest(businessProcess, performanceTestType);
         setUp(
                 testScenario
                         .getPopulationBuilder()
@@ -39,49 +33,62 @@ public class PerformanceTestRunner extends Simulation {
         );
     }
 
-    private BPSimulationService selectTest(BusinessProcess businessProcess, PerformanceTestType testType) {
+    private BusinessProcessSimulation selectTest(BusinessProcess businessProcess,
+                                                 PerformanceTestType performanceTestType) {
+        BusinessProcessService service;
+        int virtualUserCount;
+
         switch (businessProcess) {
             case BP1:
-                return createTestScenario(BP1_VU, testType, BP1SimulationImpl.class, BP1BreakpointSimulationImpl.class);
+                service = new AddProductBusinessProcessServiceImpl();
+                virtualUserCount = BP1_VU;
+                break;
             case BP2:
-                return createTestScenario(BP2_VU, testType, BP2SimulationImpl.class, BP2BreakpointSimulationImpl.class);
+                service = new UpdateProductBusinessProcessServiceImpl();
+                virtualUserCount = BP2_VU;
+                break;
             case BP3:
-                return createTestScenario(BP3_VU, testType, BP3SimulationImpl.class, BP3BreakpointSimulationImpl.class);
+                service = new GetAllProductsBusinessProcessServiceImpl();
+                virtualUserCount = BP3_VU;
+                break;
             default:
-                String errorMessage = "Business process '" + businessProcess.name() + "' has not been implemented.";
-                logger.error(errorMessage);
-                throw new RuntimeException(errorMessage);
+                throw new RuntimeException("Business process '" + businessProcess.name()
+                        + "' has not been implemented.");
         }
+
+        return createTestScenario(virtualUserCount, service, performanceTestType);
     }
 
-    private BPSimulationService createTestScenario(int vus, PerformanceTestType performanceTestType,
-                                                   Class<? extends BPSimulationService> testClass,
-                                                   Class<? extends BPSimulationService> breakpointClass) {
+    private BusinessProcessSimulation createTestScenario(int virtualUserCount, BusinessProcessService service,
+                                                         PerformanceTestType performanceTestType) {
         try {
             switch (performanceTestType) {
                 case LOAD:
-                    return testClass.getConstructor(int.class, int.class, int.class, int.class)
-                            .newInstance(vus, DEFAULT_RAMP_UP_TIME_IN_SECONDS,
-                                    DEFAULT_THINK_TIME_IN_SECONDS, LOAD_TEST_DURATION_IN_SECONDS);
+                    return new BusinessProcessSimulation(
+                            virtualUserCount, DEFAULT_RAMP_UP_TIME, DEFAULT_THINK_TIME,
+                            LOAD_TEST_DURATION, false, service
+                    );
                 case STRESS:
-                    return testClass.getConstructor(int.class, int.class, int.class, int.class)
-                            .newInstance(vus, STRESS_TEST_RAMP_UP_TIME_IN_SECONDS,
-                                    STRESS_TEST_THINK_TIME_IN_SECONDS, STRESS_TEST_DURATION_IN_SECONDS);
+                    return new BusinessProcessSimulation(
+                            virtualUserCount, STRESS_TEST_RAMP_UP_TIME, STRESS_TEST_THINK_TIME,
+                            STRESS_TEST_DURATION, false, service
+                    );
                 case ENDURANCE:
-                    return testClass.getConstructor(int.class, int.class, int.class, int.class)
-                            .newInstance(vus, DEFAULT_RAMP_UP_TIME_IN_SECONDS,
-                                    DEFAULT_THINK_TIME_IN_SECONDS, ENDURANCE_TEST_DURATION_IN_SECONDS);
+                    return new BusinessProcessSimulation(
+                            virtualUserCount, DEFAULT_RAMP_UP_TIME, DEFAULT_THINK_TIME,
+                            ENDURANCE_TEST_DURATION, false, service
+                    );
                 case BREAKPOINT:
-                    return breakpointClass.getConstructor(int.class, int.class, int.class)
-                            .newInstance(MAX_VU, MAX_VU * VU_RAMP_UP_RATE, DEFAULT_THINK_TIME_IN_SECONDS);
+                    return new BusinessProcessSimulation(
+                            MAX_VIRTUAL_USERS, ofSeconds(MAX_VIRTUAL_USERS / VIRTUAL_USER_RAMP_UP_RATE),
+                            DEFAULT_THINK_TIME, ofSeconds(0), true, service
+                    );
                 default:
                     throw new RuntimeException("Performance test type '" + performanceTestType.name()
                             + "' has not been implemented.");
             }
         } catch (Exception e) {
-            String errorMessage = "Failed to create test scenario";
-            logger.error(errorMessage);
-            throw new RuntimeException(errorMessage);
+            throw new RuntimeException("Failed to create the performance test scenario");
         }
     }
 }

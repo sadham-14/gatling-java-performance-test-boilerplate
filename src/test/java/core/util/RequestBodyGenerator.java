@@ -4,6 +4,16 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class RequestBodyGenerator {
+    public static String getAuthenticationRequestPayload() {
+        JSONObject jsonObject = new JSONObject();
+
+        jsonObject.put("username", "emilys");
+        jsonObject.put("password", "emilyspass");
+        jsonObject.put("expiresInMins", 120);
+
+        return jsonObject.toString();
+    }
+
     public static String getAddProductRequestPayload() {
         JSONObject jsonObject = new JSONObject();
 
@@ -33,16 +43,6 @@ public class RequestBodyGenerator {
     public static String getUpdateProductRequestPayload() {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("title", "#{productName}");
-
-        return jsonObject.toString();
-    }
-
-    public static String getAuthenticationRequestPayload() {
-        JSONObject jsonObject = new JSONObject();
-
-        jsonObject.put("username", "kminchelle");
-        jsonObject.put("password", "0lelplR");
-        jsonObject.put("expiresInMins", 120);
 
         return jsonObject.toString();
     }

@@ -12,19 +12,16 @@ After importing the perf test script to IntelliJ IDEA, run Maven build first.
 In settings, ensure that the java compiler used is JDK 11 and the Maven JVM selected is `Project SDK`. Once selected, the Maven JVM and java compiler both should be of same version.
 
 ## Project Structure
-Test scripts are located in `/scenario` folder. 
+Business processes for the performance tests are located in `/scenario` folder. 
 
 Structure is of following:
 ```
 └── scenario
-│   ├── breakpoint
-│   │   └── BP1BreakpointSimulationImpl.java
-│   │   └── BP2BreakpointSimulationImpl.java
-│   │   └── BP3BreakpointSimulationImpl.java
-│   ├── BP1SimulationImpl.java
-│   ├── BP2SimulationImpl.java
-│   ├── BP3SimulationImpl.java
-│   ├── BPSimulationService.java
+│   ├── BusinessProcessService.java
+│   ├── AddProductBusinessProcessServiceImpl.java
+│   ├── UpdateProductBusinessProcessServiceImpl.java
+│   ├── GetAllProductsBusinessProcessServiceImpl.java
+│   ├── BusinessProcessSimulation.java
 ```
 
 For util files that are used in the tests, they are located in the `/core` folder.
@@ -61,23 +58,23 @@ Structure is of following:
     `mvn gatling:test -Dgatling.simulationClass=PerformanceTestRunner -Denv=SIT -Dbp=BP1 -DtestType=LOAD -Dgatling.core.runDescription="BP1 Load Test"`
 
 2. Wait till test execution is completed
-3. Once test is completed, the report will be stored at `<project_path_directory>/build/report/gatling`
+3. Once test is completed, the report will be stored at `<project_path_directory>/target/gatling/<test-name>`
 
 ## Test Data File Usage and Directory
-If csv data files are required to use for the requests, pls place it in `resources/data` directory. Ensure that the data files are named clearly to prevent confusion. 
+If csv data files are required to use for the requests, pls place it in `test/resources/data` directory. Ensure that the data files are named clearly to prevent confusion. 
 
 ** Do note that if you have added data files that is only meant for testing locally, please do not commit them into the repository.
 
 ## Generate Gatling HTML Reports from simulation.log
 
 ### 1. Download Gatling Highcharts Standalone Bundle 
-Visit the [Gatling Download page](https://gatling.io/thank-you/) and download the Gatling Highcharts Standalone bundle. Ensure that the version matches your Gatling version.
+Visit the [Gatling Download page](https://repo1.maven.org/maven2/io/gatling/highcharts/gatling-charts-highcharts-bundle/3.11.3/gatling-charts-highcharts-bundle-3.11.3.zip) and download the Gatling Highcharts Standalone bundle. Ensure that the version matches your Gatling version.
 
 ### 2. Extract the Bundle
 Extract the downloaded archive to a location on your machine.
 
 ### 3. Copy the simulation.log File
-Copy your `simulation.log` file to the `user-files/simulations/<project-name>` directory inside the extracted Gatling bundle.
+Go to `target/gatling/<test-name>` and copy your `simulation.log` file to the `user-files/simulations/<project-name>` directory inside the extracted Gatling bundle.
 
 ### 4. Run the Report Generation
 Open a terminal, navigate to the Gatling bundle directory, and run the following command:

@@ -8,9 +8,9 @@ public class ApiPayloadConstant {
     public static final String GET_ALL_PRODUCTS_API_NAME = "[GET] Get All Products";
 
     // API Endpoints
-    public static final String PRODUCTS_ENDPOINT = "/auth/products";
-    public static final String ADD_PRODUCT_ENDPOINT = PRODUCTS_ENDPOINT.concat("/add");
     public static final String AUTHORIZATION_ENDPOINT = "/auth/login";
+    public static final String PRODUCTS_ENDPOINT = "/auth/products";
+    public static final String ADD_PRODUCT_ENDPOINT = PRODUCTS_ENDPOINT + "/add";
 
     // Authentication
     public static final String AUTH_HEADER_NAME = "Authorization";
@@ -23,5 +23,6 @@ public class ApiPayloadConstant {
     // Response Status Codes
     public static final String RESPONSE_STATUS_CODE = "responseStatusCode";
     public static final int HTTP_OK = 200;
+    public static final int HTTP_CREATED = 201;
     public static final int HTTP_INTERNAL_SERVER_ERROR = 500;
 }

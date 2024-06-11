@@ -13,7 +13,7 @@ import static io.gatling.javaapi.http.HttpDsl.status;
 public class AuthController {
     public static ActionBuilder getAuthenticationToken() {
         return http(GET_AUTH_TOKEN_API_NAME)
-                .post(BASE_URL.concat(AUTHORIZATION_ENDPOINT))
+                .post(BASE_URL + AUTHORIZATION_ENDPOINT)
                 .body(StringBody(getAuthenticationRequestPayload()))
                 .check(status().is(200).saveAs(RESPONSE_STATUS_CODE))
                 .check(jsonPath("$.token").notNull())
