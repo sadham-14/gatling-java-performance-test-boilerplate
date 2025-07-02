@@ -21,4 +21,4 @@ WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app /usr/src/app
 
 # Set entrypoint to run Gatling simulations (modify class name if needed)
-ENTRYPOINT ["mvn", "gatling:test"]
+ENTRYPOINT ["gatling:test"]
